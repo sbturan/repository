@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import processes.Pipeline;
 import processes.Smoother;
 import processes.Threshold;
+import processes.ThresholdIterative;
 
 public class ProcessAnImageTest {
 
@@ -22,7 +23,7 @@ public class ProcessAnImageTest {
         threshold.saveFile("Avarage5xfilter&threshold");*/
         Pipeline pipeline = new Pipeline(LoadImage(filePath));
         Smoother smoothFilter = new Smoother(5, Smoother.FilterType.MedianFilter);
-        Threshold threshold = new Threshold();
+        ThresholdIterative threshold = new ThresholdIterative(10);
         pipeline.AddProcess(smoothFilter);
         pipeline.AddProcess(threshold);
         pipeline.run();
