@@ -29,7 +29,10 @@ public class Threshold extends Process {
         Color color = new Color(red, green, blue);
         Color whiteColor = new Color(0, 0, 0);
         Color blackColor = new Color(255, 255, 255);
-
+        
+        BufferedImage outputImg = copyImage(img);
+        
+        
         int imgWidht = img.getWidth();
         int imgHeight = img.getHeight();
         for (int i = 0; i < imgWidht; i++) {
@@ -41,6 +44,9 @@ public class Threshold extends Process {
                 }
             }
         }
+        
+        this.outputImg = new BufferedImage(outputImg.getWidth(), outputImg.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+        this.outputImg.getGraphics().drawImage(outputImg, 0, 0, null);
     }
 
     @Override

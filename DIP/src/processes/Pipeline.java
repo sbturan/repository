@@ -22,6 +22,13 @@ public class Pipeline extends Process{
         outputImg = copyImage(img);
     }
     
+    public Pipeline(BufferedImage img, String filePath)
+    {
+        this.filePath = filePath;
+        this.img = img;
+        outputImg = copyImage(img);
+    }
+    
     public void AddProcess(Process process)
     {
         Processes.add(process);
@@ -30,11 +37,15 @@ public class Pipeline extends Process{
     @Override
     public void run() {
         BufferedImage imgAcu = copyImage(img);
+        int i = 0;
         for(Process process : Processes)
         {
             process.setImg(imgAcu);
             process.run();  
             imgAcu = process.getOutputImg();
+            if(filePath != null)
+                saveFile(String.valueOf(i), imgAcu, filePath);
+            i++;
         }
         
         outputImg = copyImage(imgAcu);

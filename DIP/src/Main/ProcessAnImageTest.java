@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import processes.HoughTransform;
 import processes.Pipeline;
 import processes.Smoother;
 import processes.Threshold;
@@ -11,7 +12,7 @@ import processes.ThresholdIterative;
 
 public class ProcessAnImageTest {
 
-    final static String filePath = "C:/Users/Orkun/Desktop/plaka.jpg";
+    final static String filePath = "C:/Users/Orkun/Desktop/plaka2.jpg";
 
     public static void main(String[] Args) throws Exception {
         
@@ -21,13 +22,14 @@ public class ProcessAnImageTest {
         threshold.setImg(smoothFilter.getOutputImg());
         threshold.run();
         threshold.saveFile("Avarage5xfilter&threshold");*/
-        Pipeline pipeline = new Pipeline(LoadImage(filePath));
+        Pipeline pipeline = new Pipeline(LoadImage(filePath), filePath);
         Smoother smoothFilter = new Smoother(5, Smoother.FilterType.MedianFilter);
-        ThresholdIterative threshold = new ThresholdIterative(10);
+        Threshold threshold = new Threshold();
         pipeline.AddProcess(smoothFilter);
         pipeline.AddProcess(threshold);
+        HoughTransform hough = new HoughTransform(true);
+        pipeline.AddProcess(hough);
         pipeline.run();
-        pipeline.saveFile("pipeline",filePath);
         
     }
     
