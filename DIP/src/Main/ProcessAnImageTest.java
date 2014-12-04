@@ -6,7 +6,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import processes.HoughTransform;
 import processes.Pipeline;
+import processes.RGBtoGray;
 import processes.Smoother;
+import processes.SobelEdge;
 import processes.Threshold;
 import processes.ThresholdIterative;
 
@@ -24,11 +26,17 @@ public class ProcessAnImageTest {
         threshold.saveFile("Avarage5xfilter&threshold");*/
         Pipeline pipeline = new Pipeline(LoadImage(filePath), filePath);
         Smoother smoothFilter = new Smoother(5, Smoother.FilterType.MedianFilter);
-        Threshold threshold = new Threshold();
+        Threshold threshold = new Threshold(1);
+        SobelEdge sobel = new SobelEdge();
+        HoughTransform hough = new HoughTransform(false);
+        
+        
         pipeline.AddProcess(smoothFilter);
+        pipeline.AddProcess(new RGBtoGray());
+        pipeline.AddProcess(sobel);
         pipeline.AddProcess(threshold);
-        HoughTransform hough = new HoughTransform(true);
         pipeline.AddProcess(hough);
+        
         pipeline.run();
         
     }

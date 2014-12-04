@@ -2,8 +2,11 @@ package processes;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.List;
+import sun.awt.image.WritableRasterNative;
 
 public class Threshold extends Process {
 
@@ -16,9 +19,11 @@ public class Threshold extends Process {
         this.img = img;
         outputImg = copyImage(img);
     }
-
-    public Threshold() {
+    
+    int threshold;
+    public Threshold(int threshold) {
         super();
+        this.threshold = threshold;
     }
 
     private void processThreshold() {
@@ -38,9 +43,9 @@ public class Threshold extends Process {
         for (int i = 0; i < imgWidht; i++) {
             for (int j = 0; j < imgHeight; j++) {
                 if (img.getRGB(i, j) < color.getRGB()) {
-                    outputImg.setRGB(i, j, whiteColor.getRGB());
-                } else {
                     outputImg.setRGB(i, j, blackColor.getRGB());
+                } else {
+                    outputImg.setRGB(i, j, whiteColor.getRGB());
                 }
             }
         }
@@ -48,9 +53,36 @@ public class Threshold extends Process {
         this.outputImg = new BufferedImage(outputImg.getWidth(), outputImg.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
         this.outputImg.getGraphics().drawImage(outputImg, 0, 0, null);
     }
+    
+    private void processThresholdGray() {
+        int imgWidht = img.getWidth();
+        int imgHeight = img.getHeight();
+        
+        outputImg = new BufferedImage(imgWidht, imgHeight, BufferedImage.TYPE_BYTE_BINARY);
+        
+        Raster data = img.getData();
+        WritableRaster outputdata = outputImg.getRaster();
+        for (int i = 0; i < imgWidht; i++) {
+            for (int j = 0; j < imgHeight; j++) {
+                if (data.getSample(i, j, 0) < threshold) {
+                    outputdata.setSample(i, j, 0, 1);
+                } else {
+                    outputdata.setSample(i, j, 0, 0);
+                }
+            }
+        }
+        
+        outputImg.setData(outputdata);
+        
+        //this.outputImg = new BufferedImage(outputImg.getWidth(), outputImg.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+        //this.outputImg.getGraphics().drawImage(outputImg, 0, 0, null);
+    }
 
     @Override
     public void run() {
-        processThreshold();
+        if(img.getType() == BufferedImage.TYPE_BYTE_GRAY)
+            processThresholdGray();
+        else
+            processThreshold();
     }
 }
