@@ -68,8 +68,8 @@ public class ThresholdIterative extends Process{
         if (itl < 0) {
             itl = itl * (-1);
         }
-        System.out.println("oldThreshold//New threshold//c1//c2//g1//g2");
-        System.out.println(oldThreshold.getRGB() + "//" + newThreshold.getRGB() + "//" + c1 + "//" + c2 + "//" + g1.size() + "//" + g2.size());
+       // System.out.println("oldThreshold//New threshold//c1//c2//g1//g2");
+       // System.out.println(oldThreshold.getRGB() + "//" + newThreshold.getRGB() + "//" + c1 + "//" + c2 + "//" + g1.size() + "//" + g2.size());
         if (itl > thresholdLevel) {
             newThreshold = iterate(newThreshold, thresholdLevel);
 
