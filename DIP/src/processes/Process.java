@@ -43,8 +43,9 @@ public abstract class Process implements Runnable{
 
         File outputfile = new File(newPath);
         try {
-            System.out.println("Image saved :" + newPath);
+           
             ImageIO.write(outputImg, fileType.replace(".", ""), outputfile);
+            System.out.println("Image saved :" + newPath);
         } catch (IOException e) {
 
             e.printStackTrace();
