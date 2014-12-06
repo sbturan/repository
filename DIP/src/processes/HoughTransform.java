@@ -85,6 +85,8 @@ public class HoughTransform extends Process {
             }
         }
         
+        
+        
     }
 
     int Max = 0;

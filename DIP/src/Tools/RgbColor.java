@@ -1,7 +1,7 @@
 package Tools;
 
 public class RgbColor {
-	
+	// TODO: gray = 0.299r + 0.587g + 0.114b.
 	int RGB;
 	int red;
 	int green;
