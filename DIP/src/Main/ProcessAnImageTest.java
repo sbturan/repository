@@ -10,12 +10,14 @@ import processes.Pipeline;
 import processes.RGBtoGray;
 import processes.Smoother;
 import processes.SobelEdge;
+import processes.SuppressLocalMaxima;
 import processes.Threshold;
 import processes.ThresholdIterative;
+import processes.WindowedProcess;
 
 public class ProcessAnImageTest {
 
-    final static String filePath = "C:/Users/Orkun/Desktop/plaka.jpg";
+    final static String filePath = "C:/Users/Orkun/Desktop/kareler.jpg";
 
     public static void main(String[] Args) throws Exception {
         
@@ -31,16 +33,19 @@ public class ProcessAnImageTest {
         HistogramEq histEq = new HistogramEq();
         Threshold threshold = new Threshold(1);
         SobelEdge sobel = new SobelEdge();
+        SuppressLocalMaxima suppressLocalMaxima = new SuppressLocalMaxima();
         HoughTransform hough = new HoughTransform(false);
         
         
-        pipeline.AddProcess(smoothFilter);
-        pipeline.AddProcess(smoothFilter);
+        //pipeline.AddProcess(smoothFilter);
+        //pipeline.AddProcess(smoothFilter);
         pipeline.AddProcess(new RGBtoGray());
         pipeline.AddProcess(histEq);
         pipeline.AddProcess(sobel);
+        
         pipeline.AddProcess(threshold);
-        pipeline.AddProcess(hough);
+        WindowedProcess windowedProcess = new WindowedProcess(hough, 200, 50, 100, 25);
+        pipeline.AddProcess(windowedProcess);
         
         pipeline.run();
         

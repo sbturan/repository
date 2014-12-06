@@ -25,6 +25,12 @@ public class Threshold extends Process {
         super();
         this.threshold = threshold;
     }
+    
+    public Threshold(BufferedImage img, int threshold) {
+        super();
+        this.threshold = threshold;
+        this.img = img;
+    }
 
     private void processThreshold() {
         int red = 128;
@@ -64,10 +70,10 @@ public class Threshold extends Process {
         WritableRaster outputdata = outputImg.getRaster();
         for (int i = 0; i < imgWidht; i++) {
             for (int j = 0; j < imgHeight; j++) {
-                if (data.getSample(i, j, 0) < threshold) {
-                    outputdata.setSample(i, j, 0, 1);
-                } else {
+                if (data.getSample(i, j, 0) > threshold) {
                     outputdata.setSample(i, j, 0, 0);
+                } else {
+                    outputdata.setSample(i, j, 0, 1);
                 }
             }
         }

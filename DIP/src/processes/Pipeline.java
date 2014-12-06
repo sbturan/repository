@@ -31,20 +31,29 @@ public class Pipeline extends Process{
     
     public void AddProcess(Process process)
     {
+        if(process.filePath == null)
+                    process.filePath = filePath;
         Processes.add(process);
+        
     }
     
     @Override
     public void run() {
         BufferedImage imgAcu = copyImage(img);
         int i = 0;
+        
         for(Process process : Processes)
         {
+            long begin = System.currentTimeMillis();
             process.setImg(imgAcu);
             process.run();  
+            long end = System.currentTimeMillis();
             imgAcu = process.getOutputImg();
-            if(filePath != null)
-                saveFile(String.valueOf(i), imgAcu, filePath);
+            
+            saveFile(String.valueOf(i), imgAcu, filePath);
+            
+            System.out.println((end-begin) +"ms");
+            
             i++;
         }
         

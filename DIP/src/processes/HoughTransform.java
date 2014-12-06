@@ -27,10 +27,10 @@ public class HoughTransform extends Process {
         }
     }
 
-    boolean stretchHistogram = false;
+    boolean drawLines = false;
 
-    public HoughTransform(boolean stretchHistogram) {
-        this.stretchHistogram = stretchHistogram;
+    public HoughTransform(boolean drawLines) {
+        this.drawLines = drawLines;
     }
 
     void HoughTransform(BufferedImage img) throws Exception {
@@ -42,9 +42,9 @@ public class HoughTransform extends Process {
         int imgHeight = img.getHeight();
         // hough uzayının boyutlarını hesaplıyoruz
         int houghSpace_widht = (int) (Math.PI / d_alfa);
-        double houghSpace_height_d = Math.sqrt(Math.pow(imgWidht, 2) + Math.pow(imgHeight, 2)) / 2;
+        double houghSpace_height_d = Math.sqrt(Math.pow(imgWidht, 2) + Math.pow(imgHeight, 2));
         int houghSpace_height = (int) houghSpace_height_d;
-        int[][] HoughSpace = new int[houghSpace_widht][houghSpace_height];
+        int[][] HoughSpace = new int[houghSpace_widht + 1][houghSpace_height + 1];
 
         for (int i = 0; i < houghSpace_widht; i++) {
             for (int j = 0; j < houghSpace_height; j++) {
@@ -61,11 +61,11 @@ public class HoughTransform extends Process {
                         int x = i - (imgWidht / 2);
                         int y = j - (imgHeight / 2);
 
-                        int r = (int) Math.abs(x * Math.cos(alfa * d_alfa) + (y * Math.sin(alfa * d_alfa)));
+                        int r = (int) (x * Math.cos(alfa * d_alfa) + (y * Math.sin(alfa * d_alfa)));
                         try {
-                            HoughSpace[alfa][(int) (r)]++;
-                            assert (HoughSpace[alfa][(int) (r)]) <= 6000;
-                            assert (HoughSpace[alfa][(int) (r)]) >= 0;
+                            HoughSpace[alfa][(int) (r +(houghSpace_height/2))]++;
+                            //assert (HoughSpace[alfa][(int) (r)]) <= 6000;
+                            //assert (HoughSpace[alfa][(int) (r)]) >= 0;
                         } catch (ArrayIndexOutOfBoundsException hata) {
                             System.err.println(houghSpace_widht + "-" + houghSpace_height + " " + alfa + "-" + String.valueOf(r / 2) + (houghSpace_height));
                         }
@@ -73,20 +73,22 @@ public class HoughTransform extends Process {
                 }
             }
         }
-        
+
         CalcMaxMin(HoughSpace);
 
-        outputImg = new BufferedImage(houghSpace_widht, houghSpace_height, BufferedImage.TYPE_BYTE_GRAY);
-        Raster data = outputImg.getData();
-        for (int i = 0; i < houghSpace_widht; i++) {
-            for (int j = 0; j < houghSpace_height; j++) {
-                int stretch = (int) (((HoughSpace[i][j]-Min)*256)/(double)Max);
-                outputImg.getRaster().setSample(i, j, 0, stretch);
+        if (drawLines) {
+
+        } else {
+            outputImg = new BufferedImage(houghSpace_widht, houghSpace_height, BufferedImage.TYPE_BYTE_GRAY);
+            Raster data = outputImg.getData();
+            for (int i = 0; i < houghSpace_widht; i++) {
+                for (int j = 0; j < houghSpace_height; j++) {
+                    int stretch = HoughSpace[i][j];//(int) (((HoughSpace[i][j]-Min)*256)/(double)Max);
+                    outputImg.getRaster().setSample(i, j, 0, stretch);
+                }
             }
+            
         }
-        
-        
-        
     }
 
     int Max = 0;
@@ -106,31 +108,30 @@ public class HoughTransform extends Process {
     }
 
     /*
-    private void stretch() {
-        BufferedImage tempImg = copyImage(outputImg);
+     private void stretch() {
+     BufferedImage tempImg = copyImage(outputImg);
 
-        int imgWidht = tempImg.getWidth();
-        int imgHeight = tempImg.getHeight();
-        for (int i = 0; i < imgWidht; i++) {
-            for (int j = 0; j < imgHeight; j++) {
-                int pixel = tempImg.getRaster().getSample(i, j, 0);
-                if (pixel > Max) {
-                    Max = pixel;
-                } else if (pixel < Min) {
-                    Min = pixel;
-                }
-            }
-        }
+     int imgWidht = tempImg.getWidth();
+     int imgHeight = tempImg.getHeight();
+     for (int i = 0; i < imgWidht; i++) {
+     for (int j = 0; j < imgHeight; j++) {
+     int pixel = tempImg.getRaster().getSample(i, j, 0);
+     if (pixel > Max) {
+     Max = pixel;
+     } else if (pixel < Min) {
+     Min = pixel;
+     }
+     }
+     }
 
-        for (int i = 0; i < imgWidht; i++) {
-            for (int j = 0; j < imgHeight; j++) {
-                int newPixel = ((tempImg.getRaster().getSample(i, j, 0) - Min) / (Max - Min)) * 65536;
-                outputImg.getRaster().setSample(i, j, 0, newPixel);
-            }
-        }
+     for (int i = 0; i < imgWidht; i++) {
+     for (int j = 0; j < imgHeight; j++) {
+     int newPixel = ((tempImg.getRaster().getSample(i, j, 0) - Min) / (Max - Min)) * 65536;
+     outputImg.getRaster().setSample(i, j, 0, newPixel);
+     }
+     }
 
-    }*/
-
+     }*/
     @Override
     public void run() {
         processHoughTransform();
