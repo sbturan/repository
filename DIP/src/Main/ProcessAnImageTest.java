@@ -17,7 +17,7 @@ import processes.WindowedProcess;
 
 public class ProcessAnImageTest {
 
-    final static String filePath = "C:/Users/Orkun/Desktop/kareler.jpg";
+    final static String filePath = "C:/Users/Orkun/Desktop/kareler2.bmp";
 
     public static void main(String[] Args) throws Exception {
         
@@ -34,7 +34,7 @@ public class ProcessAnImageTest {
         Threshold threshold = new Threshold(1);
         SobelEdge sobel = new SobelEdge();
         SuppressLocalMaxima suppressLocalMaxima = new SuppressLocalMaxima();
-        HoughTransform hough = new HoughTransform(false);
+        HoughTransform hough = new HoughTransform(true);
         
         
         //pipeline.AddProcess(smoothFilter);
@@ -50,6 +50,8 @@ public class ProcessAnImageTest {
         pipeline.run();
         
     }
+    
+    
     
     public static BufferedImage LoadImage(String filePath)
     {

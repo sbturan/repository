@@ -7,6 +7,7 @@ package processes;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +28,14 @@ public class HoughTransform extends Process {
         }
     }
 
-    boolean drawLines = false;
+    boolean ench = false;
 
-    public HoughTransform(boolean drawLines) {
-        this.drawLines = drawLines;
+    public HoughTransform(boolean ench) {
+        this.ench = ench;
     }
+    int houghSpace_widht;
+    int houghSpace_height;
+    int[][] HoughSpace;
 
     void HoughTransform(BufferedImage img) throws Exception {
         if (img.getType() != BufferedImage.TYPE_BYTE_BINARY) {
@@ -41,10 +45,10 @@ public class HoughTransform extends Process {
         int imgWidht = img.getWidth();
         int imgHeight = img.getHeight();
         // hough uzayının boyutlarını hesaplıyoruz
-        int houghSpace_widht = (int) (Math.PI / d_alfa);
+        houghSpace_widht = (int) (Math.PI / d_alfa);
         double houghSpace_height_d = Math.sqrt(Math.pow(imgWidht, 2) + Math.pow(imgHeight, 2));
-        int houghSpace_height = (int) houghSpace_height_d;
-        int[][] HoughSpace = new int[houghSpace_widht + 1][houghSpace_height + 1];
+        houghSpace_height = (int) houghSpace_height_d;
+        HoughSpace = new int[houghSpace_widht + 1][houghSpace_height + 1];
 
         for (int i = 0; i < houghSpace_widht; i++) {
             for (int j = 0; j < houghSpace_height; j++) {
@@ -63,7 +67,7 @@ public class HoughTransform extends Process {
 
                         int r = (int) (x * Math.cos(alfa * d_alfa) + (y * Math.sin(alfa * d_alfa)));
                         try {
-                            HoughSpace[alfa][(int) (r +(houghSpace_height/2))]++;
+                            HoughSpace[alfa][(int) (r + (houghSpace_height / 2))]++;
                             //assert (HoughSpace[alfa][(int) (r)]) <= 6000;
                             //assert (HoughSpace[alfa][(int) (r)]) >= 0;
                         } catch (ArrayIndexOutOfBoundsException hata) {
@@ -75,9 +79,20 @@ public class HoughTransform extends Process {
         }
 
         CalcMaxMin(HoughSpace);
-
-        if (drawLines) {
-
+        Enchenhancement(5, 5, 100);
+        if (ench) {
+            
+            outputImg = new BufferedImage(houghSpace_widht, houghSpace_height, BufferedImage.TYPE_BYTE_GRAY);
+            Raster data = outputImg.getData();
+            for (int i = 0; i < houghSpace_widht; i++) {
+                for (int j = 0; j < houghSpace_height; j++) {
+                    int[] beyaz = new int[] { 255, 255,255 };
+                    if(hough_enc[i][j])
+                        outputImg.getRaster().setPixel(i, j, beyaz);
+                    
+                    
+                }
+            }
         } else {
             outputImg = new BufferedImage(houghSpace_widht, houghSpace_height, BufferedImage.TYPE_BYTE_GRAY);
             Raster data = outputImg.getData();
@@ -87,8 +102,28 @@ public class HoughTransform extends Process {
                     outputImg.getRaster().setSample(i, j, 0, stretch);
                 }
             }
-            
+
         }
+        
+    }
+
+    boolean[][] hough_enc;
+
+    private void Enchenhancement(int w, int h, int Tc) {
+        hough_enc = new boolean[houghSpace_widht][houghSpace_height];
+        for (int i = w / 2; i < houghSpace_widht - w / 2; i++) {
+            for (int j = h / 2; j < houghSpace_height - h / 2; j++) {
+                double bolen = 0;
+                for (int x = (-1 * w) / 2; x <= w / 2; x++) {
+                    for (int y = (-1 * h) / 2; y <= h / 2; y++) {
+                        bolen += HoughSpace[i + x][j + y];
+                    }
+                }
+                double sabit = (h * w * Math.pow(HoughSpace[i][j], 2));
+                hough_enc[i][j] = (sabit / bolen) > Tc;
+            }
+        }
+
     }
 
     int Max = 0;
